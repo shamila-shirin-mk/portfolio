@@ -1,0 +1,28 @@
+.ts-icon {
+  color: rgba(255, 255, 255, 0.28);
+  transition: color 0.25s ease;
+}
+
+.ts-label {
+  color: #6E7C7C;
+  transition: color 0.25s ease;
+}
+
+.ts-card {
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+}
+
+.ts-card:hover {
+  transform: translateY(-6px) scale(1.06);
+  box-shadow: 0 0 28px -4px var(--glow), 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+  border-color: var(--glow-border) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.ts-card:hover .ts-icon {
+  color: var(--brand-color, #ffffff);
+}
+
+.ts-card:hover .ts-label {
+  color: #F5F5F0;
+}

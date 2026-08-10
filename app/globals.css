@@ -1,0 +1,95 @@
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+/* Satoshi (Fontshare) for body/display text, JetBrains Mono (Google Fonts) for mono labels */
+@theme {
+  --color-charcoal: #1A1A1D;
+  --color-charcoal-light: #2D2D30;
+  --color-charcoal-dark: #0F0F10;
+
+  --color-gray-cool: #6E7C7C;
+  --color-gray-darker: #4A5454;
+  --color-gray-lighter: #B8C5C5;
+
+  --color-ivory: #F5F5F0;
+  --color-ivory-warm: #FAFAF8;
+  --color-ivory-soft: #ECECEA;
+
+  --font-sans: "Satoshi", system-ui, sans-serif;
+  --font-display: "Satoshi", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-delay: float 8s ease-in-out infinite;
+  --animate-fade-in: fadeIn 0.8s ease-out forwards;
+  --animate-slide-up: slideUp 0.6s ease-out forwards;
+  --animate-spin-slow: spin 15s linear infinite;
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px)
+    }
+
+    50% {
+      transform: translateY(-20px)
+    }
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0
+    }
+
+    100% {
+      opacity: 1
+    }
+  }
+
+  @keyframes slideUp {
+    0% {
+      transform: translateY(30px);
+      opacity: 0
+    }
+
+    100% {
+      transform: translateY(0);
+      opacity: 1
+    }
+  }
+}
+
+/* Theme configuration moved to tailwind.config.ts to resolve IDE linter warnings */
+
+/* Responsive section padding — guaranteed, no Tailwind compilation needed */
+.section-content {
+  padding-left: clamp(1rem, 2.5vw, 2.5rem);
+  padding-right: clamp(1rem, 2.5vw, 2.5rem);
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-charcoal);
+  color: var(--color-ivory);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--color-gray-cool);
+  color: var(--color-ivory);
+}
