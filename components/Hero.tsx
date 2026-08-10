@@ -31,7 +31,7 @@ export default function Hero({ onEnter }: HeroProps) {
                     transition={{ duration: 0.7 }}
                     className="font-mono text-[10px] sm:text-xs tracking-[0.28em] text-gray-400 uppercase mb-5 block"
                 >
-                    Aspiring Data Scientist
+                    Aspiring Data Scientist.
                 </motion.span>
 
                 <motion.div
