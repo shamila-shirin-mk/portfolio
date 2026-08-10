@@ -11,7 +11,7 @@ const TargetCursor = ({
 }) => {
   const cursorRef = useRef(null);
   const cornersRef = useRef(null);
-  const spinTl = useRef(null);
+  const spinRef = useRef(null);
   const dotRef = useRef(null);
 
   const isActiveRef = useRef(false);
@@ -62,6 +62,29 @@ const TargetCursor = ({
     let currentLeaveHandler = null;
     let resumeTimeout = null;
 
+    /*
+     * GSAP's core ticker, once woken by any tween, keeps calling
+     * requestAnimationFrame forever at display refresh rate — even with
+     * zero active tweens (confirmed: ~60 empty ticks/sec measured over a
+     * 25s idle window with no interaction at all). Explicitly sleep it
+     * after a short grace period of no cursor activity, and let the next
+     * gsap.to() call auto-wake it. This is the only GSAP usage on the
+     * page, so it's safe to manage the global ticker here.
+     *
+     * Deliberately implemented as a ticker-driven check (not setTimeout) —
+     * setTimeout callbacks proved unreliable to schedule while this same
+     * ticker's rAF loop is actively running (observed in headless Chrome;
+     * piggybacking on the ticker's own already-reliable cadence sidesteps it).
+     */
+    let lastActivityAt = performance.now();
+    const idleCheckFn = () => {
+      if (!isActiveRef.current && performance.now() - lastActivityAt > 1200) {
+        gsap.ticker.sleep();
+      }
+    };
+    gsap.ticker.add(idleCheckFn);
+    const markActivity = () => { lastActivityAt = performance.now(); };
+
     const cleanupTarget = target => {
       if (currentLeaveHandler) {
         target.removeEventListener('mouseleave', currentLeaveHandler);
@@ -75,17 +98,8 @@ const TargetCursor = ({
       x: window.innerWidth / 2,
       y: window.innerHeight / 2
     });
-
-    const createSpinTimeline = () => {
-      if (spinTl.current) {
-        spinTl.current.kill();
-      }
-      spinTl.current = gsap
-        .timeline({ repeat: -1 })
-        .to(cursor, { rotation: '+=360', duration: spinDuration, ease: 'none' });
-    };
-
-    createSpinTimeline();
+    // Idle rotation runs as a CSS animation on spinRef (see TargetCursor.css) —
+    // it's already spinning by default via the .target-cursor-spin class in JSX.
 
     const tickerFn = () => {
       if (!targetCornerPositionsRef.current || !cursorRef.current || !cornersRef.current) {
@@ -123,7 +137,11 @@ const TargetCursor = ({
 
     tickerFnRef.current = tickerFn;
 
-    const moveHandler = e => moveCursor(e.clientX, e.clientY);
+    const moveHandler = e => {
+      gsap.ticker.wake();
+      markActivity();
+      moveCursor(e.clientX, e.clientY);
+    };
     window.addEventListener('mousemove', moveHandler);
 
     const scrollHandler = () => {
@@ -178,13 +196,14 @@ const TargetCursor = ({
         resumeTimeout = null;
       }
 
+      gsap.ticker.wake();
+      markActivity();
+
       activeTarget = target;
       const corners = Array.from(cornersRef.current);
       corners.forEach(corner => gsap.killTweensOf(corner));
 
-      gsap.killTweensOf(cursorRef.current, 'rotation');
-      spinTl.current?.pause();
-      gsap.set(cursorRef.current, { rotation: 0 });
+      if (spinRef.current) spinRef.current.classList.remove('target-cursor-spin');
 
       const rect = target.getBoundingClientRect();
       const { borderWidth, cornerSize } = constants;
@@ -220,6 +239,7 @@ const TargetCursor = ({
         gsap.ticker.remove(tickerFnRef.current);
 
         isActiveRef.current = false;
+        markActivity(); // resets the idle clock so idleCheckFn gives the corner-return tween below time to finish
         targetCornerPositionsRef.current = null;
         gsap.set(activeStrengthRef, { current: 0, overwrite: true });
         activeTarget = null;
@@ -250,21 +270,11 @@ const TargetCursor = ({
         }
 
         resumeTimeout = setTimeout(() => {
-          if (!activeTarget && cursorRef.current && spinTl.current) {
-            const currentRotation = gsap.getProperty(cursorRef.current, 'rotation');
-            const normalizedRotation = currentRotation % 360;
-            spinTl.current.kill();
-            spinTl.current = gsap
-              .timeline({ repeat: -1 })
-              .to(cursorRef.current, { rotation: '+=360', duration: spinDuration, ease: 'none' });
-            gsap.to(cursorRef.current, {
-              rotation: normalizedRotation + 360,
-              duration: spinDuration * (1 - normalizedRotation / 360),
-              ease: 'none',
-              onComplete: () => {
-                spinTl.current?.restart();
-              }
-            });
+          if (!activeTarget && spinRef.current) {
+            // restart the CSS spin cleanly from 0deg: remove, force reflow, re-add
+            spinRef.current.classList.remove('target-cursor-spin');
+            void spinRef.current.offsetWidth;
+            spinRef.current.classList.add('target-cursor-spin');
           }
           resumeTimeout = null;
         }, 50);
@@ -279,6 +289,7 @@ const TargetCursor = ({
     window.addEventListener('mouseover', enterHandler, { passive: true });
 
     return () => {
+      gsap.ticker.remove(idleCheckFn);
       if (tickerFnRef.current) {
         gsap.ticker.remove(tickerFnRef.current);
       }
@@ -293,7 +304,6 @@ const TargetCursor = ({
         cleanupTarget(activeTarget);
       }
 
-      spinTl.current?.kill();
       document.body.style.cursor = originalCursor;
 
       isActiveRef.current = false;
@@ -303,14 +313,8 @@ const TargetCursor = ({
   }, [targetSelector, spinDuration, moveCursor, constants, hideDefaultCursor, isMobile, hoverDuration, parallaxOn]);
 
   useEffect(() => {
-    if (isMobile || !cursorRef.current || !spinTl.current) return;
-    if (spinTl.current.isActive()) {
-      spinTl.current.kill();
-      spinTl.current = gsap
-        .timeline({ repeat: -1 })
-        .to(cursorRef.current, { rotation: '+=360', duration: spinDuration, ease: 'none' });
-    }
-  }, [spinDuration, isMobile]);
+    if (spinRef.current) spinRef.current.style.animationDuration = `${spinDuration}s`;
+  }, [spinDuration]);
 
   if (isMobile) {
     return null;
@@ -318,11 +322,13 @@ const TargetCursor = ({
 
   return (
     <div ref={cursorRef} className="target-cursor-wrapper">
-      <div ref={dotRef} className="target-cursor-dot" />
-      <div className="target-cursor-corner corner-tl" />
-      <div className="target-cursor-corner corner-tr" />
-      <div className="target-cursor-corner corner-br" />
-      <div className="target-cursor-corner corner-bl" />
+      <div ref={spinRef} className="target-cursor-spin" style={{ animationDuration: `${spinDuration}s` }}>
+        <div ref={dotRef} className="target-cursor-dot" />
+        <div className="target-cursor-corner corner-tl" />
+        <div className="target-cursor-corner corner-tr" />
+        <div className="target-cursor-corner corner-br" />
+        <div className="target-cursor-corner corner-bl" />
+      </div>
     </div>
   );
 };

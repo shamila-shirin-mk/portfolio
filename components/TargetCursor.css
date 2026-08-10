@@ -10,6 +10,23 @@
   transform: translate(-50%, -50%);
 }
 
+/*
+ * Idle rotation lives on its own inner element and runs as a pure CSS
+ * animation (GPU-composited) instead of a JS/GSAP ticker tween — the old
+ * version spun via gsap.to({repeat:-1}) on the main thread for as long as
+ * the cursor existed, costing CPU 24/7 regardless of user interaction.
+ * Paused (class removed) while hovering a .cursor-target; see TargetCursor.jsx.
+ */
+.target-cursor-spin {
+  animation: target-cursor-rotate 2s linear infinite;
+}
+
+@keyframes target-cursor-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .target-cursor-dot {
   position: absolute;
   left: 50%;
