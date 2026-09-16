@@ -95,7 +95,8 @@ export default function Work() {
 
             if (scrolled < 0) {
                 // Entering from top
-                panel.style.position = "fixed";
+                panel.style.position = "absolute";
+                panel.style.top = "0px";
                 panel.style.transform = `translateY(${(1 - entryP) * IH}px)`;
                 track.style.transform = "translateX(0px)";
                 if (barRef.current) barRef.current.style.transform = "scaleX(0)";
@@ -103,6 +104,7 @@ export default function Work() {
             } else if (scrolled <= maxTranslate) {
                 // Pinned horizontal scrolling phase
                 panel.style.position = "fixed";
+                panel.style.top = "0px";
                 panel.style.transform = "translateY(0px)";
                 const hP = maxTranslate > 0 ? scrolled / maxTranslate : 0;
                 track.style.transform = `translateX(-${hP * maxTranslate}px)`;
@@ -113,9 +115,9 @@ export default function Work() {
                 }
             } else {
                 // Unpinning phase: scroll past cleanly into Footer
-                panel.style.position = "fixed";
-                const exitOffset = scrolled - maxTranslate;
-                panel.style.transform = `translateY(-${exitOffset}px)`;
+                panel.style.position = "absolute";
+                panel.style.top = `${maxTranslate}px`;
+                panel.style.transform = "translateY(0px)";
                 track.style.transform = `translateX(-${maxTranslate}px)`;
                 if (barRef.current) barRef.current.style.transform = "scaleX(1)";
                 if (counterRef.current) counterRef.current.textContent = `0${projects.length} / 0${projects.length}`;
