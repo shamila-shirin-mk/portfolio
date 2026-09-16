@@ -67,7 +67,7 @@ export default function Hero({ onEnter }: HeroProps) {
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 1.8, duration: 1 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
                 className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 pointer-events-none"
                 style={{ zIndex: 10 }}
             >
