@@ -31,25 +31,10 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (!entered) return;
-
-    const onWheel = (e: WheelEvent) => {
-      if (e.deltaY < -30 && window.scrollY < 10) returnToHero();
-    };
-    let ty = 0;
-    const onTouchStart = (e: TouchEvent) => { ty = e.touches[0].clientY; };
-    const onTouchEnd = (e: TouchEvent) => {
-      if (e.changedTouches[0].clientY - ty > 40 && window.scrollY < 10) returnToHero();
-    };
-
-    window.addEventListener("wheel", onWheel, { passive: true });
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchend", onTouchEnd, { passive: true });
-    return () => {
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchend", onTouchEnd);
-    };
+    // Ensure smooth scroll to top when resetting to Hero
+    if (!entered) {
+      window.scrollTo(0, 0);
+    }
   }, [entered]);
 
   return (
@@ -85,9 +70,9 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
           >
-            <Navbar />
+            <Navbar onReturnToHero={returnToHero} />
           </motion.div>
           <div className="text-ivory" style={{ background: "var(--color-charcoal)" }}>
             <About />

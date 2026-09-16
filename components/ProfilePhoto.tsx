@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useRef, useCallback } from "react";
 
-const CARTOON  = "/me%203.webp";
-const REAL     = "/me%20cartoon%203.webp";
+const CARTOON  = "/me%20cartoon%203.webp";
+const REAL     = "/me%203.webp";
 const RADIUS   = 85; // px — size of the reveal circle
 
 export default function ProfilePhoto({

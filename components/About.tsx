@@ -21,7 +21,7 @@ function Char({
     start: number;
     end: number;
 }) {
-    const opacity = useTransform(progress, [start, end], [0.12, 1]);
+    const opacity = useTransform(progress, [start, end], [0.38, 1]);
     return (
         <motion.span style={{ opacity, display: "inline-block" }}>
             {char}

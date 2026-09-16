@@ -6,12 +6,25 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 
 const navItems = [
-    { name: "Work", href: "#work" },
     { name: "About", href: "#about" },
+    { name: "Education", href: "#education" },
+    { name: "Experience", href: "#experience" },
+    { name: "Tech Stack", href: "#techstack" },
+    { name: "Work", href: "#work" },
     { name: "Contact", href: "#contact" },
 ];
 
-export default function Navbar() {
+const socials = [
+    { name: "LinkedIn", href: "https://linkedin.com/in/shamila-shirin-m-k-91508a323" },
+    { name: "GitHub", href: "https://github.com/shamilashirin32" },
+    { name: "Email", href: "mailto:shamilashirin32@gmail.com" },
+];
+
+interface NavbarProps {
+    onReturnToHero?: () => void;
+}
+
+export default function Navbar({ onReturnToHero }: NavbarProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [visible, setVisible] = useState(true);
     const lastScrollY = useRef(0);
@@ -48,27 +61,28 @@ export default function Navbar() {
                 transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
                 {/* Blur background */}
-                <div className="absolute inset-0 h-20 bg-charcoal/10 backdrop-blur-md border-b border-ivory/5" />
+                <div className="absolute inset-0 h-20 bg-charcoal/30 backdrop-blur-md border-b border-ivory/5" />
 
                 {/* Nav content */}
                 <nav className="relative mix-blend-difference text-ivory">
                     <div className="w-full max-w-[100rem] mx-auto px-6 sm:px-12 md:px-20 lg:px-28">
                         <div className="flex justify-between items-center h-20">
 
-                            <Link
-                                href="/"
-                                className="cursor-target font-display font-black text-3xl tracking-tighter hover:opacity-80 transition-opacity z-[60]"
+                            <button
+                                type="button"
+                                onClick={onReturnToHero}
+                                className="cursor-target font-display font-black text-2xl sm:text-3xl tracking-tighter hover:opacity-80 transition-opacity z-[60] bg-transparent border-none text-left cursor-pointer p-0"
                             >
                                 SHIRIN<span className="text-gray-cool">.</span>
-                            </Link>
+                            </button>
 
                             {/* Desktop links */}
-                            <div className="hidden md:flex gap-x-10">
+                            <div className="hidden lg:flex gap-x-8">
                                 {navItems.map((item) => (
                                     <Link
                                         key={item.name}
                                         href={item.href}
-                                        className="cursor-target font-sans text-sm font-medium tracking-widest uppercase hover:text-gray-cool transition-colors relative group"
+                                        className="cursor-target font-sans text-xs font-medium tracking-widest uppercase hover:text-gray-cool transition-colors relative group"
                                     >
                                         {item.name}
                                         <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gray-cool transition-all group-hover:w-full" />
@@ -79,21 +93,21 @@ export default function Navbar() {
                             {/* Mobile hamburger */}
                             <button
                                 onClick={() => setIsOpen(!isOpen)}
-                                className="md:hidden text-ivory hover:text-gray-cool focus:outline-none z-[60]"
+                                className="lg:hidden text-ivory hover:text-gray-cool focus:outline-none z-[60] p-2"
+                                aria-label="Toggle menu"
                             >
-                                <span className="sr-only">Toggle menu</span>
                                 <div className="flex flex-col gap-1.5 items-end">
                                     <motion.span
                                         animate={isOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
-                                        className="w-8 h-0.5 bg-ivory block origin-center"
+                                        className="w-7 h-0.5 bg-ivory block origin-center"
                                     />
                                     <motion.span
                                         animate={isOpen ? { opacity: 0 } : { opacity: 1 }}
-                                        className="w-6 h-0.5 bg-ivory block"
+                                        className="w-5 h-0.5 bg-ivory block"
                                     />
                                     <motion.span
                                         animate={isOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
-                                        className="w-8 h-0.5 bg-ivory block origin-center"
+                                        className="w-7 h-0.5 bg-ivory block origin-center"
                                     />
                                 </div>
                             </button>
@@ -110,20 +124,20 @@ export default function Navbar() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: "-100%" }}
                         transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-                        className="fixed inset-0 z-50 bg-charcoal flex flex-col justify-center items-center md:hidden"
+                        className="fixed inset-0 z-50 bg-charcoal flex flex-col justify-center items-center lg:hidden"
                     >
-                        <div className="flex flex-col space-y-8 text-center">
+                        <div className="flex flex-col space-y-6 text-center">
                             {navItems.map((item, index) => (
                                 <motion.div
                                     key={item.name}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.1 * index + 0.3 }}
+                                    transition={{ delay: 0.08 * index + 0.2 }}
                                 >
                                     <Link
                                         href={item.href}
                                         onClick={() => setIsOpen(false)}
-                                        className="font-display font-black text-4xl sm:text-5xl md:text-6xl tracking-tight text-ivory hover:text-gray-cool transition-colors"
+                                        className="font-display font-black text-3xl sm:text-4xl tracking-tight text-ivory hover:text-gray-cool transition-colors"
                                     >
                                         {item.name}
                                     </Link>
@@ -131,17 +145,19 @@ export default function Navbar() {
                             ))}
                         </div>
 
-                        <div className="absolute bottom-8 flex flex-wrap justify-center gap-4 px-8">
-                            {["Twitter", "LinkedIn", "Instagram"].map((social, i) => (
+                        <div className="absolute bottom-8 flex flex-wrap justify-center gap-6 px-8">
+                            {socials.map((s, i) => (
                                 <motion.a
-                                    key={social}
-                                    href="#"
+                                    key={s.name}
+                                    href={s.href}
+                                    target={s.href.startsWith("http") ? "_blank" : undefined}
+                                    rel={s.href.startsWith("http") ? "noopener noreferrer" : undefined}
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.5 + i * 0.1 }}
-                                    className="text-gray-cool font-mono text-xs uppercase tracking-widest hover:text-ivory"
+                                    transition={{ delay: 0.4 + i * 0.1 }}
+                                    className="text-gray-cool font-mono text-xs uppercase tracking-widest hover:text-ivory transition-colors"
                                 >
-                                    {social}
+                                    {s.name}
                                 </motion.a>
                             ))}
                         </div>
