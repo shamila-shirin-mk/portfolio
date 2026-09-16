@@ -73,7 +73,7 @@ export default function ProfilePhoto({
           fill
           className="object-contain"
           style={{ objectPosition }}
-          priority={priority}
+          priority={false}
         />
       </div>
     </div>

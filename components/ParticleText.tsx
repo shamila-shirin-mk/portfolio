@@ -322,7 +322,10 @@ export default function ParticleText({
   /* ── lifecycle ── */
   useEffect(() => {
     if (!mounted) return;
-    sample();
+    const initTimer = setTimeout(() => {
+      sample();
+    }, 60);
+
     const onResize = () => {
       cancelAnimationFrame(rafId.current);
       running.current = false;
@@ -336,6 +339,7 @@ export default function ParticleText({
     };
     window.addEventListener("resize", onResize);
     return () => {
+      clearTimeout(initTimer);
       window.removeEventListener("resize", onResize);
       cancelAnimationFrame(rafId.current);
       const hero = heroRef?.current;
