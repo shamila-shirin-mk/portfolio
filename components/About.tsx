@@ -1,10 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { Fragment, useRef } from "react";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
-
-const PHOTO = "/me%20cartoon%203.webp";
 
 const P1 = "Aspiring Data Scientist with a strong foundation in Python, SQL, and Machine Learning, skilled in data cleaning, exploratory data analysis, and statistical analysis to uncover meaningful patterns in data.";
 const P2 = "Builds interactive dashboards using Power BI and Tableau, and applies classification, regression, and model evaluation techniques to solve real-world problems. Passionate about turning complex data into clear, actionable insights.";
@@ -54,7 +51,7 @@ function RevealParagraphs({
             {texts.map((text, ti) => {
                 const words = text.split(" ");
                 return (
-                    <span key={ti} style={{ display: "block" }}>
+                    <span key={ti} style={{ display: "block", marginBottom: ti < texts.length - 1 ? "1.5rem" : "0" }}>
                         {words.map((word, wi) => {
                             const letters = word.split("").map((char) => {
                                 const i     = globalIdx++;
@@ -85,12 +82,6 @@ function RevealParagraphs({
 export default function About() {
     const sectionRef = useRef<HTMLElement>(null);
 
-    /*
-     * "start start" → progress=0 when section top hits viewport top (scroll=0,
-     *   the exact moment the user enters from the hero).
-     * "0.75 start" → progress=1 when 75% of the section has scrolled past the
-     *   viewport top — all text is revealed while still well inside the section.
-     */
     const { scrollYProgress } = useScroll({
         target: sectionRef,
         offset: ["start start", "0.75 start"],
@@ -100,7 +91,7 @@ export default function About() {
         <section
             ref={sectionRef}
             id="about"
-            className="relative flex flex-col lg:flex-row min-h-screen w-full bg-transparent overflow-hidden"
+            className="relative flex flex-col justify-center items-center min-h-screen w-full bg-transparent overflow-hidden"
         >
             {/* Decorative background text */}
             <div className="absolute top-20 lg:top-32 left-0 w-full overflow-hidden leading-none opacity-[0.04] select-none pointer-events-none z-0">
@@ -115,24 +106,27 @@ export default function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className="section-content flex-1 min-w-0 flex flex-col justify-center relative z-10 py-14 sm:py-20 lg:py-0 pr-4"
+                className="section-content w-full max-w-4xl flex flex-col justify-center relative z-10 py-16 sm:py-24"
             >
-                <div className="w-full max-w-[520px]">
-                    <span className="text-gray-cool font-mono text-sm tracking-widest uppercase mb-4 block">
-                        Who I Am
-                    </span>
+                <div className="max-w-3xl">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="h-[1px] w-10 bg-gray-cool" />
+                        <span className="text-gray-cool font-mono text-xs sm:text-sm tracking-widest uppercase">
+                            Who I Am
+                        </span>
+                    </div>
 
                     <h2
-                        className="font-display font-bold leading-tight mb-6 sm:mb-8"
-                        style={{ fontSize: "clamp(2rem, 3.6vw, 3.75rem)" }}
+                        className="font-display font-bold leading-tight mb-8 sm:mb-10 text-ivory"
+                        style={{ fontSize: "clamp(2.2rem, 4.2vw, 4.2rem)" }}
                     >
                         Insight-Driven <br />
                         <span className="text-gray-cool italic font-serif">Data Scientist</span>
                     </h2>
 
                     <div
-                        className="space-y-4 text-gray-lighter leading-relaxed font-sans"
-                        style={{ fontSize: "clamp(0.9rem, 1.4vw, 1.125rem)" }}
+                        className="text-gray-lighter leading-relaxed font-sans"
+                        style={{ fontSize: "clamp(1.05rem, 1.6vw, 1.3rem)" }}
                     >
                         <RevealParagraphs
                             texts={[P1, P2]}
@@ -143,21 +137,6 @@ export default function About() {
                     </div>
                 </div>
             </motion.div>
-
-            {/* Mobile photo */}
-            <div
-                className="lg:hidden absolute inset-0 pointer-events-none"
-                style={{ opacity: 0.18, zIndex: 1 }}
-            >
-                <Image src={PHOTO} alt="" fill className="object-contain object-bottom" priority />
-            </div>
-
-            {/* Desktop photo */}
-            <div className="hidden lg:block relative" style={{ width: "50vw", flexShrink: 0 }}>
-                <div className="absolute inset-0">
-                    <Image src={PHOTO} alt="Shamila Shirin" fill className="object-contain object-bottom" priority />
-                </div>
-            </div>
         </section>
     );
 }
