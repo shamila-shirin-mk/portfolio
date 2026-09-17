@@ -14,12 +14,12 @@ const projects = [
     },
     {
         id: 2,
-        title: "Project Coming Soon",
-        category: "Data Science · TBA",
-        description: "Reserved space for your next project. Share the details whenever you're ready to add it!",
-        image: "",
-        url: "",
-        status: "soon" as const,
+        title: "Hotel Booking Analysis",
+        category: "Data Analytics · Python & Tableau",
+        description: "End-to-end data analytics project examining hotel reservation cancellation trends, customer booking patterns, lead times, and revenue metrics.",
+        image: "/projects/hotel_booking_analysis.jpg",
+        url: "https://github.com/shamila-shirin-mk/Hotel-Booking-Analysis",
+        status: "live" as const,
     },
     {
         id: 3,
