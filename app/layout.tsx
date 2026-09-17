@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://shamila-shirin.vercel.app"),
   title: "Shamila Shirin M K — Data Scientist",
   description:
     "Aspiring Data Scientist skilled in Python, SQL, Machine Learning, and data visualization tools like Power BI and Tableau. Based in Malappuram, Kerala.",
